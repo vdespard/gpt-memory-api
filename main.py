@@ -1,34 +1,61 @@
-from fastapi import FastAPI, HTTPException
-from database import SessionLocal, Property
-from vector_db import store_memory, retrieve_memory
+from fastapi import FastAPI, Depends, HTTPException
+from sqlalchemy.orm import Session
+from typing import List
+from database import get_db, Property  # Import SQLAlchemy model and DB session
+from schemas import PropertySchema  # Import Pydantic schema
 
 app = FastAPI()
 
-@app.get("/get_property/")
-def get_property(name: str):
-    """Retrieve structured data from SQL."""
-    db = SessionLocal()
-    property = db.query(Property).filter(Property.name == name).first()
-    if property:
-        return property
-    raise HTTPException(status_code=404, detail="Property not found.")
+# ✅ GET all properties
+@app.get("/properties", response_model=List[PropertySchema])
+async def get_properties(db: Session = Depends(get_db)):
+    properties = db.query(Property).all()
+    return properties
 
-@app.post("/add_property/")
-def add_property(property: Property):
-    """Add structured data to SQL."""
-    db = SessionLocal()
-    db.add(property)
+# ✅ GET a property by ID
+@app.get("/properties/{property_id}", response_model=PropertySchema)
+async def get_property(property_id: int, db: Session = Depends(get_db)):
+    property_item = db.query(Property).filter(Property.id == property_id).first()
+    if property_item is None:
+        raise HTTPException(status_code=404, detail="Property not found")
+    return property_item
+
+# ✅ CREATE a new property
+@app.post("/properties", response_model=PropertySchema)
+async def create_property(property_data: PropertySchema, db: Session = Depends(get_db)):
+    new_property = Property(**property_data.dict())
+    db.add(new_property)
     db.commit()
-    return {"message": "Property added successfully!"}
+    db.refresh(new_property)
+    return new_property
 
-@app.post("/add_memory/")
-def add_memory(user_input: str, gpt_response: str):
-    """Store conversation embeddings in Pinecone."""
-    store_memory(user_input, gpt_response)
-    return {"message": "Memory stored!"}
+# ✅ UPDATE an existing property
+@app.put("/properties/{property_id}", response_model=PropertySchema)
+async def update_property(property_id: int, updated_data: PropertySchema, db: Session = Depends(get_db)):
+    property_item = db.query(Property).filter(Property.id == property_id).first()
+    if property_item is None:
+        raise HTTPException(status_code=404, detail="Property not found")
 
-@app.get("/search_memory/")
-def search_memory(query: str):
-    """Retrieve past conversation memory from Pinecone."""
-    results = retrieve_memory(query)
-    return results
+    for key, value in updated_data.dict().items():
+        setattr(property_item, key, value)
+
+    db.commit()
+    db.refresh(property_item)
+    return property_item
+
+# ✅ DELETE a property
+@app.delete("/properties/{property_id}")
+async def delete_property(property_id: int, db: Session = Depends(get_db)):
+    property_item = db.query(Property).filter(Property.id == property_id).first()
+    if property_item is None:
+        raise HTTPException(status_code=404, detail="Property not found")
+
+    db.delete(property_item)
+    db.commit()
+    return {"message": "Property deleted successfully"}
+
+# ✅ Root route
+@app.get("/")
+async def root():
+    return {"message": "API is working!"}
+
