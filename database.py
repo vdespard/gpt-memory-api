@@ -3,7 +3,7 @@ from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import sessionmaker
 
 # Replace with your Supabase or PostgreSQL connection string
-DATABASE_URL = "postgresql://your_user:your_password@your_db_host:5432/your_db_name"
+DATABASE_URL = postgresql://postgres:ARIs3TtZH12p4OZ9@db.tttvpvlcrutkajgtyybn.supabase.co:5432/postgres
 
 engine = create_engine(DATABASE_URL)
 SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
