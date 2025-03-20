@@ -1,27 +1,40 @@
-import pinecone
+import os
+from pinecone import Pinecone
 import openai
 
-# Pinecone API Key
-PINECONE_API_KEY = "your_pinecone_api_key"
-pinecone.init(api_key=PINECONE_API_KEY, environment="us-west1-gcp")
+# Load API keys from environment variables
+PINECONE_API_KEY = os.getenv("PINECONE_API_KEY")
+OPENAI_API_KEY = os.getenv("OPENAI_API_KEY")
 
-# Create or connect to an index
+# Initialize Pinecone
+pc = Pinecone(api_key=PINECONE_API_KEY)
+
+# Define the index name
 index_name = "gpt-memory"
-if index_name not in pinecone.list_indexes():
-    pinecone.create_index(index_name, dimension=1536, metric="cosine")
 
-index = pinecone.Index(index_name)
+# Check if index exists, create if not
+if index_name not in pc.list_indexes().names():
+    pc.create_index(
+        name=index_name,
+        dimension=1536,  # Adjust based on your embedding model
+        metric="cosine",
+        spec={"cloud": "aws", "region": "us-west-2"},
+    )
 
-# OpenAI API Key
-OPENAI_API_KEY = "your_openai_api_key"
+# Connect to the index
+index = pc.Index(index_name)
 
 def store_memory(user_input, gpt_response):
     """Convert text to embeddings and store in Pinecone"""
-    embedding = openai.Embedding.create(input=user_input, model="text-embedding-ada-002")["data"][0]["embedding"]
-    index.upsert([(user_input, embedding)])
+    response = openai.Embedding.create(input=[user_input], model="text-embedding-ada-002")
+    embedding = response["data"][0]["embedding"]
+    
+    index.upsert(vectors=[{"id": user_input, "values": embedding}])
 
 def retrieve_memory(query):
     """Retrieve similar past conversations"""
-    embedding = openai.Embedding.create(input=query, model="text-embedding-ada-002")["data"][0]["embedding"]
-    results = index.query([embedding], top_k=3, include_metadata=True)
+    response = openai.Embedding.create(input=[query], model="text-embedding-ada-002")
+    embedding = response["data"][0]["embedding"]
+    
+    results = index.query(vector=embedding, top_k=3, include_metadata=True)
     return results["matches"]
