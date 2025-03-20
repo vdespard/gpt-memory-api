@@ -29,7 +29,7 @@ oauthlib==3.2.2
 openai==1.67.0
 openpyxl==3.1.5
 pandas==2.2.3
-pinecone-client==6.0.0
+pinecone==6.0.2
 pinecone-plugin-interface==0.0.7
 psycopg2==2.9.10
 pyasn1==0.6.1
