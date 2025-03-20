@@ -2,7 +2,7 @@ from fastapi import FastAPI, Depends, HTTPException
 from sqlalchemy.orm import Session
 from typing import List
 from database import get_db, Property  # Import SQLAlchemy model and DB session
-from schemas import PropertySchema  # Import Pydantic schema
+from schemas import PropertySchema  # ✅ Correct way to import if it's in the same project
 
 app = FastAPI()
 
