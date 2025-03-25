@@ -10,11 +10,15 @@ paths:
   /supabase/property:
     post:
       summary: Add a new property to Supabase
-      ...
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Property'
+      responses:
+        '200':
+          description: Property created
 
-servers:
-  - url: https://gpt-memory-api.onrender.com
-paths:
   /properties:
     get:
       summary: Get all properties
@@ -76,4 +80,5 @@ components:
           type: string
         price:
           type: number
+
 
