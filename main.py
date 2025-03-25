@@ -7,6 +7,14 @@ from fastapi.responses import FileResponse
 
 app = FastAPI()
 
+from fastapi.responses import FileResponse
+import os
+
+@app.get("/openapi.yaml", include_in_schema=False)
+async def get_openapi_yaml():
+    file_path = os.path.join(os.path.dirname(__file__), "openapi.yaml")
+    return FileResponse(file_path, media_type="text/yaml")
+
 # ✅ Models
 class PropertyInput(BaseModel):
     id: str
