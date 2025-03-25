@@ -1,6 +1,7 @@
 openapi: 3.1.0
 info:
   title: GPT Property Manager
+  description: API to manage properties and embeddings via Supabase and Pinecone.
   version: 1.0.0
 
 servers:
@@ -10,7 +11,8 @@ paths:
   /supabase/property:
     post:
       operationId: addProperty
-      summary: Add a new property to Supabase
+      summary: Add a new property
+      description: Adds a new property to Supabase.
       requestBody:
         required: true
         content:
@@ -19,7 +21,7 @@ paths:
               $ref: '#/components/schemas/Property'
       responses:
         '200':
-          description: Property created
+          description: Property successfully created.
           content:
             application/json:
               schema:
@@ -29,9 +31,10 @@ paths:
     get:
       operationId: getAllProperties
       summary: Get all properties
+      description: Retrieves a list of all properties.
       responses:
         '200':
-          description: A list of properties
+          description: A list of properties.
           content:
             application/json:
               schema:
@@ -40,7 +43,8 @@ paths:
                   $ref: '#/components/schemas/Property'
     post:
       operationId: createProperty
-      summary: Create a new property
+      summary: Create a property
+      description: Creates a new property and stores it.
       requestBody:
         required: true
         content:
@@ -49,7 +53,7 @@ paths:
               $ref: '#/components/schemas/Property'
       responses:
         '200':
-          description: Property created
+          description: Property created.
           content:
             application/json:
               schema:
@@ -58,7 +62,8 @@ paths:
   /vector-search:
     post:
       operationId: searchSimilarProperties
-      summary: Search similar properties by text
+      summary: Search properties by text
+      description: Performs a semantic search for similar properties using Pinecone.
       requestBody:
         required: true
         content:
@@ -68,9 +73,10 @@ paths:
               properties:
                 query:
                   type: string
+                  description: The text to search for.
       responses:
         '200':
-          description: Vector search result
+          description: Vector search result.
           content:
             application/json:
               schema:
@@ -78,4 +84,21 @@ paths:
 
   /github/{owner}/{repo}:
     get:
-      operationId:
+      operationId: getGithubRepoInfo
+      summary: Get GitHub repo info
+      description: Retrieves basic information about a GitHub repository.
+      parameters:
+        - name: owner
+          in: path
+          required: true
+          description: GitHub username or org name
+          schema:
+            type: string
+        - name: repo
+          in: path
+          required: true
+          description: Repository name
+          schema:
+            type: string
+      responses:
+        '200':
