@@ -1,4 +1,4 @@
-openapi: 3.0.3
+openapi: 3.1.0
 info:
   title: GPT Property Manager
   description: API to manage properties and embeddings via Supabase and Pinecone.
@@ -18,20 +18,20 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/Property'
+              $ref: '#/$defs/Property'
       responses:
         '200':
           description: Property successfully created.
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Property'
+                $ref: '#/$defs/Property'
 
   /properties:
     get:
       operationId: getAllProperties
       summary: Get all properties
-      description: Retrieves a list of all properties.
+      description: Retrieves all properties.
       responses:
         '200':
           description: A list of properties.
@@ -40,31 +40,30 @@ paths:
               schema:
                 type: array
                 items:
-                  $ref: '#/components/schemas/Property'
-
+                  $ref: '#/$defs/Property'
     post:
       operationId: createProperty
       summary: Create a property
-      description: Creates a new property and stores it.
+      description: Creates and stores a new property.
       requestBody:
         required: true
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/Property'
+              $ref: '#/$defs/Property'
       responses:
         '200':
           description: Property created.
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Property'
+                $ref: '#/$defs/Property'
 
   /vector-search:
     post:
       operationId: searchSimilarProperties
-      summary: Search properties by text
-      description: Performs a semantic search for similar properties using Pinecone.
+      summary: Semantic search for properties
+      description: Searches Pinecone for similar properties by text.
       requestBody:
         required: true
         content:
@@ -74,10 +73,12 @@ paths:
               properties:
                 query:
                   type: string
-                  description: The text to search for.
+                  description: The text to search
+              required:
+                - query
       responses:
         '200':
-          description: Vector search result.
+          description: Search results
           content:
             application/json:
               schema:
@@ -92,12 +93,12 @@ paths:
     get:
       operationId: getGithubRepoInfo
       summary: Get GitHub repo info
-      description: Retrieves basic information about a GitHub repository.
+      description: Retrieves basic repository data.
       parameters:
         - name: owner
           in: path
           required: true
-          description: GitHub username or organization
+          description: GitHub username/org
           schema:
             type: string
         - name: repo
@@ -108,7 +109,7 @@ paths:
             type: string
       responses:
         '200':
-          description: GitHub repository info.
+          description: GitHub repository info
           content:
             application/json:
               schema:
@@ -119,21 +120,21 @@ paths:
                   stars:
                     type: integer
 
-components:
-  schemas:
-    Property:
-      type: object
-      required:
-        - title
-        - description
-        - price
-      properties:
-        title:
-          type: string
-          description: The title of the property
-        description:
-          type: string
-          description: The description of the property
-        price:
-          type: number
-          description: The price of the property
+$defs:
+  Property:
+    type: object
+    description: A real estate property object.
+    required:
+      - title
+      - description
+      - price
+    properties:
+      title:
+        type: string
+        description: Property title
+      description:
+        type: string
+        description: Property description
+      price:
+        type: number
+        description: Property price
