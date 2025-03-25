@@ -3,11 +3,6 @@ info:
   title: GPT Property Manager
   version: 1.0.0
 
-openapi: 3.0.0
-info:
-  title: GPT Property Manager
-  version: 1.0.0
-
 servers:
   - url: https://gpt-memory-api.onrender.com
 
