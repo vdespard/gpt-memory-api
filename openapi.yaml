@@ -82,7 +82,7 @@ paths:
               schema:
                 type: object
 
-  /github/{owner}/{repo}:
+    /github/{owner}/{repo}:
     get:
       operationId: getGithubRepoInfo
       summary: Get GitHub repo info
@@ -102,3 +102,15 @@ paths:
             type: string
       responses:
         '200':
+          description: GitHub repository info.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  name:
+                    type: string
+                    description: Name of the repository
+                  stars:
+                    type: integer
+                    description: Star count
