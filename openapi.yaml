@@ -1,15 +1,104 @@
 openapi: 3.0.0
 info:
-  title: Minimal Test
+  title: GPT Property Manager
   version: 1.0.0
 
 servers:
   - url: https://gpt-memory-api.onrender.com
 
 paths:
-  /ping:
-    get:
-      summary: Health check
+  /supabase/property:
+    post:
+      summary: Add a new property to Supabase
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Property'
       responses:
         '200':
-          description: OK
+          description: Property created
+          content:
+            application/json:
+              schema:
+                type: object
+
+  /properties:
+    get:
+      summary: Get all properties
+      responses:
+        '200':
+          description: A list of properties
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Property'
+    post:
+      summary: Create a new property
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Property'
+      responses:
+        '200':
+          description: Property created
+          content:
+            application/json:
+              schema:
+                type: object
+
+  /vector-search:
+    post:
+      summary: Search similar properties by text
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                query:
+                  type: string
+      responses:
+        '200':
+          description: Vector search result
+          content:
+            application/json:
+              schema:
+                type: object
+
+  /github/{owner}/{repo}:
+    get:
+      summary: Get GitHub repo info
+      parameters:
+        - name: owner
+          in: path
+          required: true
+          schema:
+            type: string
+        - name: repo
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: GitHub repository info
+          content:
+            application/json:
+              schema:
+                type: object
+
+components:
+  schemas:
+    Property:
+      type: object
+      properties:
+        title:
+          type: string
+        description:
+          type: string
+        price:
+          type: number
