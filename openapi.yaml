@@ -25,7 +25,7 @@ paths:
           content:
             application/json:
               schema:
-                type: object
+                $ref: '#/components/schemas/Property'
 
   /properties:
     get:
@@ -57,7 +57,7 @@ paths:
           content:
             application/json:
               schema:
-                type: object
+                $ref: '#/components/schemas/Property'
 
   /vector-search:
     post:
@@ -81,8 +81,13 @@ paths:
             application/json:
               schema:
                 type: object
+                properties:
+                  results:
+                    type: array
+                    items:
+                      type: string
 
-    /github/{owner}/{repo}:
+  /github/{owner}/{repo}:
     get:
       operationId: getGithubRepoInfo
       summary: Get GitHub repo info
@@ -97,20 +102,4 @@ paths:
         - name: repo
           in: path
           required: true
-          description: Repository name
-          schema:
-            type: string
-      responses:
-        '200':
-          description: GitHub repository info.
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  name:
-                    type: string
-                    description: Name of the repository
-                  stars:
-                    type: integer
-                    description: Star count
+          description:
