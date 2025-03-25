@@ -18,14 +18,14 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/$defs/Property'
+              $ref: '#/components/schemas/Property'
       responses:
         '200':
           description: Property successfully created.
           content:
             application/json:
               schema:
-                $ref: '#/$defs/Property'
+                $ref: '#/components/schemas/Property'
 
   /properties:
     get:
@@ -40,7 +40,8 @@ paths:
               schema:
                 type: array
                 items:
-                  $ref: '#/$defs/Property'
+                  $ref: '#/components/schemas/Property'
+
     post:
       operationId: createProperty
       summary: Create a property
@@ -50,14 +51,14 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/$defs/Property'
+              $ref: '#/components/schemas/Property'
       responses:
         '200':
           description: Property created.
           content:
             application/json:
               schema:
-                $ref: '#/$defs/Property'
+                $ref: '#/components/schemas/Property'
 
   /vector-search:
     post:
@@ -70,12 +71,12 @@ paths:
           application/json:
             schema:
               type: object
+              required:
+                - query
               properties:
                 query:
                   type: string
                   description: The text to search
-              required:
-                - query
       responses:
         '200':
           description: Search results
@@ -120,21 +121,22 @@ paths:
                   stars:
                     type: integer
 
-$defs:
-  Property:
-    type: object
-    description: A real estate property object.
-    required:
-      - title
-      - description
-      - price
-    properties:
-      title:
-        type: string
-        description: Property title
-      description:
-        type: string
-        description: Property description
-      price:
-        type: number
-        description: Property price
+components:
+  schemas:
+    Property:
+      type: object
+      description: A real estate property object.
+      required:
+        - title
+        - description
+        - price
+      properties:
+        title:
+          type: string
+          description: Property title
+        description:
+          type: string
+          description: Property description
+        price:
+          type: number
+          description: Property price
