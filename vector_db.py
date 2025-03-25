@@ -1,40 +1,21 @@
 import os
-from pinecone import Pinecone
-import openai
+import pinecone
+from openai import OpenAI
+from dotenv import load_dotenv
 
-# Load API keys from environment variables
-PINECONE_API_KEY = os.getenv("PINECONE_API_KEY")
-OPENAI_API_KEY = os.getenv("OPENAI_API_KEY")
+load_dotenv()
+pinecone.init(api_key=os.getenv("PINECONE_API_KEY"), environment="gcp-starter")
 
-# Initialize Pinecone
-pc = Pinecone(api_key=PINECONE_API_KEY)
+index = pinecone.Index(os.getenv("PINECONE_INDEX_NAME"))
 
-# Define the index name
-index_name = "gpt-memory"
+def get_embedding(text: str):
+    # Assuming you're using OpenAI to embed text
+    from openai import OpenAI
+    client = OpenAI(api_key=os.getenv("OPENAI_API_KEY"))
+    embedding = client.embeddings.create(input=[text], model="text-embedding-ada-002")
+    return embedding.data[0].embedding
 
-# Check if index exists, create if not
-if index_name not in pc.list_indexes().names():
-    pc.create_index(
-        name=index_name,
-        dimension=1536,  # Adjust based on your embedding model
-        metric="cosine",
-        spec={"cloud": "aws", "region": "us-west-2"},
-    )
-
-# Connect to the index
-index = pc.Index(index_name)
-
-def store_memory(user_input, gpt_response):
-    """Convert text to embeddings and store in Pinecone"""
-    response = openai.Embedding.create(input=[user_input], model="text-embedding-ada-002")
-    embedding = response["data"][0]["embedding"]
-    
-    index.upsert(vectors=[{"id": user_input, "values": embedding}])
-
-def retrieve_memory(query):
-    """Retrieve similar past conversations"""
-    response = openai.Embedding.create(input=[query], model="text-embedding-ada-002")
-    embedding = response["data"][0]["embedding"]
-    
-    results = index.query(vector=embedding, top_k=3, include_metadata=True)
-    return results["matches"]
+def search_property_embeddings(query: str):
+    vector = get_embedding(query)
+    result = index.query(vector=vector, top_k=5, include_metadata=True)
+    return result.to_dict()

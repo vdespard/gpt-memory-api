@@ -7,4 +7,4 @@ class PropertySchema(BaseModel):
     address: str
 
     class Config:
-        orm_mode = True  # Allows conversion from SQLAlchemy model
+        from_attributes = True  # ✅ Updated for Pydantic V2
